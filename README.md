@@ -8,3 +8,5 @@ GitHub-Access-Acceleration.exe
 
 ## source
 GitHub-Access-Acceleration.py
+
+Please run it when GitHub is not accessible
