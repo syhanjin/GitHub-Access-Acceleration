@@ -16,34 +16,36 @@ s = requests.Session()
 s.mount('http://', HTTPAdapter(max_retries=5))
 s.mount('https://', HTTPAdapter(max_retries=5))
 
-hosts = [
-    'github.global.ssl.fastly.net',
-    'assets-cdn.github.com',
-    'documentcloud.github.com',
-    'github.com',
-    'gist.github.com',
-    'help.github.com',
-    'nodeload.github.com',
-    'raw.github.com',
-    'status.github.com',
-    'training.github.com',
-    'www.github.com',
-    'avatars0.githubusercontent.com',
-    'avatars1.githubusercontent.com',
-    'avatars2.githubusercontent.com',
-    'avatars3.githubusercontent.com',
-    'avatars4.githubusercontent.com',
-    'avatars5.githubusercontent.com',
-    'avatars6.githubusercontent.com',
-    'avatars7.githubusercontent.com',
-    'avatars8.githubusercontent.com',
-    'codeload.github.com',
-    'camo.githubusercontent.com',
-    'cloud.githubusercontent.com',
-    'raw.githubusercontent.com'
-]
+hosts = []
 ips = {}
 
+def get_hosts():
+    print('Download host-list.txt')
+    try:
+        s = requests.get('https://sakuyark.com/api/gaa/list', headers=headers)
+        s.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print('Get hosts failed.')
+        exit()
+    f = open('host-list.txt', 'wb')
+    for chunk in s.iter_content(100000):
+        f.write(chunk)
+    print('Successfully downloaded host-list.txt')
+    
+def check_list_update():
+    if not os.path.exists('host-list.txt'):
+        get_hosts()
+        return
+    s = requests.get('https://sakuyark.com/api/gaa/list/timestamp', headers=headers)
+    s.encoding='utf-8'
+    stamp = float(s.text)
+    if float(os.path.getmtime('host-list.txt')) < stamp:
+        get_hosts()
+
+def read_hosts():
+    with open('host-list.txt','r') as f:
+        for i in f.read().split('\n'):
+            hosts.append(i)
 
 def getIP(host):
     # print('Getting. url:','https://www.ip.cn/ip/'+host+'.html')
@@ -114,9 +116,9 @@ def is_admin():
 
 
 if __name__ == '__main__':
-    # main()
-    # '''
     if is_admin():
+        check_list_update()
+        read_hosts()
         main()
     else:
         ctypes.windll.shell32.ShellExecuteW(
