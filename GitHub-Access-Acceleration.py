@@ -8,6 +8,11 @@ from bs4 import BeautifulSoup
 import ctypes
 import sys
 
+# -- edition start --
+edition = '1.2'
+editionid = 3
+# -- edition end --
+
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.3'
 }
@@ -36,11 +41,11 @@ def get_hosts():
 def check_for_update():
     print('Check for update.')
     s = requests.get(
-        'https://sakuyark.com/api/gaa/win/timestamp', headers=headers)
+        'https://sakuyark.com/api/gaa/edid', headers=headers)
     s.encoding = 'utf-8'
-    stamp = float(s.text)
+    stamp = int(s.text)
     fn = os.path.basename(__file__)
-    if float(os.path.getmtime(fn)) < stamp:
+    if editionid < stamp:
         print('Downloading GitHub-Access-Acceleration to',fn)
         if fn.split('.')[-1] == 'py':
             try:
