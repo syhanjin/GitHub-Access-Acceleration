@@ -19,6 +19,7 @@ s.mount('https://', HTTPAdapter(max_retries=5))
 hosts = []
 ips = {}
 
+
 def get_hosts():
     print('Download host-list.txt')
     try:
@@ -31,21 +32,25 @@ def get_hosts():
     for chunk in s.iter_content(100000):
         f.write(chunk)
     print('Successfully downloaded host-list.txt')
-    
+
+
 def check_list_update():
     if not os.path.exists('host-list.txt'):
         get_hosts()
         return
-    s = requests.get('https://sakuyark.com/api/gaa/list/timestamp', headers=headers)
-    s.encoding='utf-8'
+    s = requests.get(
+        'https://sakuyark.com/api/gaa/list/timestamp', headers=headers)
+    s.encoding = 'utf-8'
     stamp = float(s.text)
     if float(os.path.getmtime('host-list.txt')) < stamp:
         get_hosts()
 
+
 def read_hosts():
-    with open('host-list.txt','r') as f:
+    with open('host-list.txt', 'r') as f:
         for i in f.read().split('\n'):
             hosts.append(i)
+
 
 def getIP(host):
     # print('Getting. url:','https://www.ip.cn/ip/'+host+'.html')
@@ -95,7 +100,7 @@ def main():
 
 ''')
         for i in ips:
-            f.write(i+' '+ips[i]+'\n')
+            f.write(ips[i]+' '+i+'\n')
         f.write('''
 # GitHub End
 
@@ -104,7 +109,7 @@ def main():
     print('Refreshing DNS cache.')
     os.system('ipconfig /flushdns')
     print('GitHub acceleration completed.')
-    
+
     os.system('pause')
 
 
