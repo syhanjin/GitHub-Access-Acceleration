@@ -33,6 +33,41 @@ def get_hosts():
         f.write(chunk)
     print('Successfully downloaded host-list.txt')
 
+def check_for_update():
+    print('Check for update.')
+    s = requests.get(
+        'https://sakuyark.com/api/gaa/win/timestamp', headers=headers)
+    s.encoding = 'utf-8'
+    stamp = float(s.text)
+    fn = os.path.basename(__file__)
+    if float(os.path.getmtime(fn)) < stamp:
+        print('Downloading GitHub-Access-Acceleration to',fn)
+        if fn.split('.')[-1] == 'py':
+            try:
+                s = requests.get('https://sakuyark.com/api/gaa/py', headers=headers)
+                s.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                print('Get update failed.')
+                exit()
+            f = open(fn, 'wb')
+            for chunk in s.iter_content(100000):
+                f.write(chunk)
+            print('Successfully downloaded',fn)
+        if fn.split('.')[-1] == 'exe':
+            try:
+                s = requests.get('https://sakuyark.com/api/gaa/win', headers=headers)
+                s.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                print('Get update failed.')
+                exit()
+            f = open(fn, 'wb')
+            for chunk in s.iter_content(100000):
+                f.write(chunk)
+            print('Successfully downloaded',fn)
+        f.close()
+        time.sleep(1.5)
+        os.system('start '+fn)
+        exit()
 
 def check_list_update():
     if not os.path.exists('host-list.txt'):
@@ -122,6 +157,7 @@ def is_admin():
 
 if __name__ == '__main__':
     if is_admin():
+        check_for_update()
         check_list_update()
         read_hosts()
         main()
