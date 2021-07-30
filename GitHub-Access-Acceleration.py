@@ -9,8 +9,8 @@ import ctypes
 import sys
 
 # -- edition start --
-edition = '1.2'
-editionid = 3
+edition = '1.3'
+editionid = 4
 # -- edition end --
 
 headers = {
@@ -38,6 +38,7 @@ def get_hosts():
         f.write(chunk)
     print('Successfully downloaded host-list.txt')
 
+
 def check_for_update():
     print('Check for update.')
     s = requests.get(
@@ -46,10 +47,11 @@ def check_for_update():
     stamp = int(s.text)
     fn = os.path.basename(__file__)
     if editionid < stamp:
-        print('Downloading GitHub-Access-Acceleration to',fn)
+        print('Downloading GitHub-Access-Acceleration to', fn)
         if fn.split('.')[-1] == 'py':
             try:
-                s = requests.get('https://sakuyark.com/api/gaa/py', headers=headers)
+                s = requests.get(
+                    'https://sakuyark.com/api/gaa/py', headers=headers)
                 s.raise_for_status()
             except requests.exceptions.RequestException as e:
                 print('Get update failed.')
@@ -57,10 +59,11 @@ def check_for_update():
             f = open(fn, 'wb')
             for chunk in s.iter_content(100000):
                 f.write(chunk)
-            print('Successfully downloaded',fn)
+            print('Successfully downloaded', fn)
         if fn.split('.')[-1] == 'exe':
             try:
-                s = requests.get('https://sakuyark.com/api/gaa/win', headers=headers)
+                s = requests.get(
+                    'https://sakuyark.com/api/gaa/win', headers=headers)
                 s.raise_for_status()
             except requests.exceptions.RequestException as e:
                 print('Get update failed.')
@@ -68,11 +71,12 @@ def check_for_update():
             f = open(fn, 'wb')
             for chunk in s.iter_content(100000):
                 f.write(chunk)
-            print('Successfully downloaded',fn)
+            print('Successfully downloaded', fn)
         f.close()
         time.sleep(1.5)
         os.system('start '+fn)
         exit()
+
 
 def check_list_update():
     if not os.path.exists('host-list.txt'):
@@ -103,7 +107,7 @@ def getIP(host):
     soup = BeautifulSoup(s.text, "html.parser")
     ip = soup.select('.layui-card-body .layui-table tr th div')[0].get_text()
     ips[host] = ip
-    print('Host:', host, 'ip:', ip)
+    print('|',host.ljust(35, ' '),'|', ip.ljust(15, ' '),'|')
 
 
 def main():
@@ -118,8 +122,10 @@ def main():
     time.sleep(2)
     print('-'*100)
     print('Get IP from ip.cn.')
+    print('-','HOST'.center(35, '-'),'|','IP'.center(15, '-'),'-')
     all_task = [executor.submit(getIP, (host)) for host in hosts]
     wait(all_task, return_when=ALL_COMPLETED)
+    print('-','END'.center(53, '-'),'-')
     print('Writting to C:\\Windows\\System32\\drivers\\etc\\hosts')
     with open('C:\\Windows\\System32\\drivers\\etc\\hosts', 'w') as f:
         f.write('''
