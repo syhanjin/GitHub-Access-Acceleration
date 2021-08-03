@@ -9,8 +9,8 @@ import ctypes
 import sys
 
 # -- edition start --
-edition = '1.3'
-editionid = 4
+edition = '1.4'
+editionid = 5
 # -- edition end --
 
 headers = {
@@ -97,15 +97,15 @@ def read_hosts():
 
 
 def getIP(host):
-    # print('Getting. url:','https://www.ip.cn/ip/'+host+'.html')
+    # print('Getting. url:','https://ip38.com/ip.php?ip='+host)
     try:
-        s = requests.get('https://www.ip.cn/ip/'+host+'.html', headers=headers)
+        s = requests.get('https://ip38.com/ip.php?ip='+host, headers=headers)
     except requests.exceptions.RequestException as e:
         print(host, 'ip acquisition failed.')
         return
     s.encoding = 'UTF-8'
     soup = BeautifulSoup(s.text, "html.parser")
-    ip = soup.select('.layui-card-body .layui-table tr th div')[0].get_text()
+    ip = soup.select('#c font font')[0].get_text()
     ips[host] = ip
     print('|',host.ljust(35, ' '),'|', ip.ljust(15, ' '),'|')
 
@@ -121,7 +121,7 @@ def main():
     executor = ThreadPoolExecutor(max_workers=10)
     time.sleep(2)
     print('-'*100)
-    print('Get IP from ip.cn.')
+    print('Get IP from \'https://ip38.com/\'.')
     print('-','HOST'.center(35, '-'),'|','IP'.center(15, '-'),'-')
     all_task = [executor.submit(getIP, (host)) for host in hosts]
     wait(all_task, return_when=ALL_COMPLETED)
