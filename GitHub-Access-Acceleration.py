@@ -107,7 +107,7 @@ def getIP(host):
     soup = BeautifulSoup(s.text, "html.parser")
     ip = soup.select('#c font font')[0].get_text()
     ips[host] = ip
-    print('|',host.ljust(35, ' '),'|', ip.ljust(15, ' '),'|')
+    print('|', host.ljust(35, ' '), '|', ip.ljust(15, ' '), '|')
 
 
 def main():
@@ -122,10 +122,10 @@ def main():
     time.sleep(2)
     print('-'*100)
     print('Get IP from \'https://ip38.com/\'.')
-    print('-','HOST'.center(35, '-'),'|','IP'.center(15, '-'),'-')
+    print('-', 'HOST'.center(35, '-'), '|', 'IP'.center(15, '-'), '-')
     all_task = [executor.submit(getIP, (host)) for host in hosts]
     wait(all_task, return_when=ALL_COMPLETED)
-    print('-','END'.center(53, '-'),'-')
+    print('-', 'END'.center(53, '-'), '-')
     print('Writting to C:\\Windows\\System32\\drivers\\etc\\hosts')
     with open('C:\\Windows\\System32\\drivers\\etc\\hosts', 'w') as f:
         f.write('''
